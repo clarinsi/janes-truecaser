@@ -2,7 +2,9 @@
 import sys
 import argparse
 import gzip
-parser = argparse.ArgumentParser(description='Applier of the truecasing model')
+import re
+alpha_re=re.compile("[^\W\d_]",re.UNICODE)
+parser=argparse.ArgumentParser(description='Applier of the truecasing model')
 parser.add_argument('-U', '--upper', help='non-lowercase first token in sentence', action='store_true')
 parser.add_argument('model', help='truecasing model')
 args=parser.parse_args()
@@ -20,6 +22,9 @@ for line in sys.stdin:
   for token in line.decode('utf8').strip().lower().split(' '):
     if start:
       if args.upper:
+        if alpha_re.search(token) is None:
+          tokens.append(token)
+          continue
         if model.get(token,token)==token:
           tokens.append(token.title())
         else:
